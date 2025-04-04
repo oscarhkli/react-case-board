@@ -3,6 +3,7 @@ import "./App.css";
 import { Link } from "react-router-dom";
 import { Case } from "./lib/definition";
 import { deleteCase, findAllCases } from "./lib/actions";
+import { Button } from "./components/button";
 
 interface DeleteButtonProps {
   id: number;
@@ -28,7 +29,7 @@ function DeleteButton({
     }
   };
 
-  return <button onClick={() => handleDeleteClick(id)}>{children}</button>;
+  return <Button onClick={() => handleDeleteClick(id)}>{children}</Button>;
 }
 
 function App() {
@@ -68,8 +69,8 @@ function App() {
   return (
     <div className="App">
       <Link to={"/create"}>
-        <button>New Case</button>
-      </Link>
+        <Button>New Case</Button>
+      </Link> 
       <table>
         <thead>
           <tr>
@@ -95,7 +96,7 @@ function App() {
                 <td>{c.lastModifiedDateTime}</td>
                 <td>
                   <Link to={`/${c.id}/edit`}>
-                    <button>Edit</button>
+                    <Button>Edit</Button>
                   </Link>
                 </td>
                 <td>

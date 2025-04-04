@@ -2,6 +2,7 @@ import { useActionState } from "react";
 import { updateCase, State } from "../lib/actions";
 import { Link, useNavigate } from "react-router-dom";
 import { Case } from "../lib/definition";
+import { Button } from "./button";
 
 interface EditFormProps {
   singleCase: Case;
@@ -112,9 +113,9 @@ export default function Form({
 
       <div>
         <Link to="/">
-          <button>Cancel</button>
+          <Button>Cancel</Button>
         </Link>
-        <button type="submit">Edit Case</button>
+        <Button type="submit">Edit Case</Button>
       </div>
     </form>
   );

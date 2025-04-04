@@ -1,6 +1,7 @@
 import { useActionState } from "react";
 import { createCase, State } from "../lib/actions";
 import { Link, useNavigate } from "react-router-dom";
+import { Button } from "./button";
 
 export default function Form() {
   const navigate = useNavigate();
@@ -86,9 +87,9 @@ export default function Form() {
 
       <div>
         <Link to="/">
-          <button>Cancel</button>
+          <Button>Cancel</Button>
         </Link>
-        <button type="submit">Create Case</button>
+        <Button type="submit">Create Case</Button>
       </div>
     </form>
   );

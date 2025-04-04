@@ -61,7 +61,7 @@ export default function EditCase() {
 
   return (
     <div>
-      <h1>{`Edit Case: ${caseId}`}</h1>
+      <h1 className="text-3xl font-bold">{`Edit Case: ${caseId}`}</h1>
       <Form singleCase={singleCase} />
     </div>
   );
