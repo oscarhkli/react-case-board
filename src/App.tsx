@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
-import { Link } from 'react-router-dom';
-import { Case } from './lib/definition';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import { Link } from "react-router-dom";
+import { Case } from "./lib/definition";
+import { deleteCase, findAllCases } from "./lib/actions";
 
 interface DeleteButtonProps {
   id: number;
@@ -10,26 +11,24 @@ interface DeleteButtonProps {
   children: React.ReactNode;
 }
 
-function DeleteButton(
-  { id, onDelete, onDeleteError, children }: DeleteButtonProps
-) {
-  const handleDeleteClick = (id: number) => {
-    fetch(`/api/v1/cases/${id}`, {method: "DELETE"})
-      .then(() => {
-        onDelete(id);
-      })
-      .catch((err) => {
-        const msg = `Error occurred while deleting case ${id}`;
-        console.error(msg, err);
-        onDeleteError(msg);
-      });
-  }
+function DeleteButton({
+  id,
+  onDelete,
+  onDeleteError,
+  children,
+}: DeleteButtonProps) {
+  const handleDeleteClick = async (id: number) => {
+    try {
+      await deleteCase(id);
+      onDelete(id);
+    } catch (err) {
+      const msg = `Error occurred while deleting case ${id}`;
+      console.error(msg, err);
+      onDeleteError(msg);
+    }
+  };
 
-  return (
-    <button onClick={() => handleDeleteClick(id)}>
-      {children}
-    </button>
-  );
+  return <button onClick={() => handleDeleteClick(id)}>{children}</button>;
 }
 
 interface State {
@@ -42,41 +41,48 @@ function App() {
     cases: [],
     opMsg: null,
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/v1/cases`)
-      .then((resp) => resp.json())
-      .then((casesResponse => {
-        let updatedStates: Case[] = [];
-        if (casesResponse && Array.isArray(casesResponse.data)) {
-          updatedStates = casesResponse.data;
-        } else {
-          console.error("Expected data.data to be an array", casesResponse);
-          updatedStates = [];
-        }
+    async function findAll() {
+      try {
+        const foundCases = await findAllCases();
         setState((state) => ({
           ...state,
-          cases: updatedStates,
+          cases: foundCases,
         }));
-      }))
-      .catch((err) => console.error(err.message));
+      } catch (err) {
+        console.error("Error in finding all cases", err);
+        setState((state) => ({
+          ...state,
+          cases: [],
+        }));
+      } finally {
+        setLoading(false);
+      }
+    }
+    findAll();
   }, []);
 
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
   const handleDeleteCase = (id: number) => {
-    const updatedCases = state.cases.filter(c => c.id !== id);
+    const updatedCases = state.cases.filter((c) => c.id !== id);
     setState((state) => ({
       ...state,
       cases: updatedCases,
       opMsg: `Successfully deleted case with ID: ${id}`,
     }));
-  }
+  };
 
   const handleDeleteError = (msg: string) => {
     setState((state) => ({
       ...state,
-      opMsg: msg
+      opMsg: msg,
     }));
-  }
+  };
 
   return (
     <div className="App">
@@ -84,7 +90,7 @@ function App() {
         <button>New Case</button>
       </Link>
       <table>
-       <thead>
+        <thead>
           <tr>
             <th>ID</th>
             <th>Case Number</th>
@@ -112,10 +118,16 @@ function App() {
                   </Link>
                 </td>
                 <td>
-                  <DeleteButton id={c.id} onDelete={handleDeleteCase} onDeleteError={handleDeleteError}>Delete</DeleteButton>
+                  <DeleteButton
+                    id={c.id}
+                    onDelete={handleDeleteCase}
+                    onDeleteError={handleDeleteError}
+                  >
+                    Delete
+                  </DeleteButton>
                 </td>
               </tr>
-            )
+            );
           })}
         </tbody>
       </table>
