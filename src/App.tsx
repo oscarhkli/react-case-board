@@ -31,32 +31,19 @@ function DeleteButton({
   return <button onClick={() => handleDeleteClick(id)}>{children}</button>;
 }
 
-interface State {
-  cases: Case[];
-  opMsg: string | null;
-}
-
 function App() {
-  const [state, setState] = useState<State>({
-    cases: [],
-    opMsg: null,
-  });
+  const [cases, setCases] = useState<Case[]>([]);
+  const [opMsg, setOpMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function findAll() {
       try {
         const foundCases = await findAllCases();
-        setState((state) => ({
-          ...state,
-          cases: foundCases,
-        }));
+        setCases(foundCases);
       } catch (err) {
         console.error("Error in finding all cases", err);
-        setState((state) => ({
-          ...state,
-          cases: [],
-        }));
+        setCases([]);
       } finally {
         setLoading(false);
       }
@@ -69,19 +56,13 @@ function App() {
   }
 
   const handleDeleteCase = (id: number) => {
-    const updatedCases = state.cases.filter((c) => c.id !== id);
-    setState((state) => ({
-      ...state,
-      cases: updatedCases,
-      opMsg: `Successfully deleted case with ID: ${id}`,
-    }));
+    const updatedCases = cases.filter((c) => c.id !== id);
+    setCases(updatedCases);
+    setOpMsg(`Successfully deleted case with ID: ${id}`);
   };
 
   const handleDeleteError = (msg: string) => {
-    setState((state) => ({
-      ...state,
-      opMsg: msg,
-    }));
+    setOpMsg(msg);
   };
 
   return (
@@ -102,7 +83,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {state.cases.map((c) => {
+          {cases.map((c) => {
             return (
               <tr key={`case-row-${c.id}`}>
                 <td>{c.id}</td>
@@ -131,7 +112,7 @@ function App() {
           })}
         </tbody>
       </table>
-      <div>{state.opMsg}</div>
+      <div>{opMsg}</div>
     </div>
   );
 }
