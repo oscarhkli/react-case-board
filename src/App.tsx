@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-
-export type Case = {
-  id: number;
-  caseNumber: string;
-  title: string;
-  description: string | null;
-  status: string;
-  createdDateTime: string;
-  lastModifiedDateTime: string;
-};
-
-export type CasesResponse = {
-  data: Case[];
-};
+import { Link } from 'react-router-dom';
+import { Case } from './lib/definition';
 
 interface DeleteButtonProps {
   id: number;
@@ -26,7 +14,7 @@ function DeleteButton(
   { id, onDelete, onDeleteError, children }: DeleteButtonProps
 ) {
   const handleDeleteClick = (id: number) => {
-    fetch(`/cases/${id}`, {method: "DELETE"})
+    fetch(`/api/v1/cases/${id}`, {method: "DELETE"})
       .then(() => {
         onDelete(id);
       })
@@ -56,7 +44,7 @@ function App() {
   });
 
   useEffect(() => {
-    fetch(`/cases`)
+    fetch(`/api/v1/cases`)
       .then((resp) => resp.json())
       .then((casesResponse => {
         let updatedStates: Case[] = [];
@@ -73,10 +61,6 @@ function App() {
       }))
       .catch((err) => console.error(err.message));
   }, []);
-
-  const handleNewClick = () => {
-
-  }
 
   const handleDeleteCase = (id: number) => {
     const updatedCases = state.cases.filter(c => c.id !== id);
@@ -96,7 +80,9 @@ function App() {
 
   return (
     <div className="App">
-      <button onClick={handleNewClick}>New Case</button>
+      <Link to={"/create"}>
+        <button>New Case</button>
+      </Link>
       <table>
        <thead>
           <tr>
@@ -120,6 +106,11 @@ function App() {
                 <td>{c.status}</td>
                 <td>{c.createdDateTime}</td>
                 <td>{c.lastModifiedDateTime}</td>
+                <td>
+                  <Link to={`/${c.id}/edit`}>
+                    <button>Edit</button>
+                  </Link>
+                </td>
                 <td>
                   <DeleteButton id={c.id} onDelete={handleDeleteCase} onDeleteError={handleDeleteError}>Delete</DeleteButton>
                 </td>
