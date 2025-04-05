@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { Case } from "./definition";
 
+const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:61001";
+
 export type State = {
   errors?: {
     caseNumber?: string[];
@@ -42,7 +44,7 @@ const FormSchema = z.object({
     })
     .optional()
     .nullable(),
-  status: z.enum(["New", "Acknoledged", "In-progress", "Resolved", "Closed"], {
+  status: z.enum(["New", "Acknowledged", "In-progress", "Resolved", "Closed"], {
     invalid_type_error: "Please select an appropriate status",
   }),
   createdDatetime: z.date(),
@@ -93,7 +95,7 @@ export async function createCase(
   };
 
   try {
-    const response = await fetch("/api/v1/cases", requestOptions);
+    const response = await fetch(`${backendUrl}/api/v1/cases`, requestOptions);
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       console.error("Failed to create case", errorData);
@@ -147,7 +149,7 @@ export async function updateCase(
   };
 
   try {
-    const response = await fetch(`/api/v1/cases/${id}`, requestOptions);
+    const response = await fetch(`${backendUrl}/api/v1/cases/${id}`, requestOptions);
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       console.error("Failed to update case", errorData);
@@ -181,7 +183,7 @@ export async function findCaseById(id: number): Promise<FindState> {
   };
 
   try {
-    const response = await fetch(`/api/v1/cases/${id}`, requestOptions);
+    const response = await fetch(`${backendUrl}/api/v1/cases/${id}`, requestOptions);
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       console.error(`Failed to find case by id ${id}`, errorData);
@@ -207,7 +209,7 @@ export async function findAllCases(): Promise<FindState> {
   };
 
   try {
-    const response = await fetch(`/api/v1/cases`, requestOptions);
+    const response = await fetch(`${backendUrl}/api/v1/cases`, requestOptions);
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       console.error("Failed to get all cases", errorData);
@@ -232,7 +234,7 @@ export async function deleteCase(id: number): Promise<void> {
   };
 
   try {
-    const response = await fetch(`/api/v1/cases/${id}`, requestOptions);
+    const response = await fetch(`${backendUrl}/api/v1/cases/${id}`, requestOptions);
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       console.error(`Failed to delete case by id ${id}`, errorData);

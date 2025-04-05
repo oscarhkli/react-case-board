@@ -35,6 +35,7 @@ export default function Form() {
               id="caseNumber"
               name="caseNumber"
               className="block w-full rounded-md border border-gray-200 py-2 pl-5 text-sm outline-2 placeholder:text-gray-500"
+              aria-describedby="caseNumber-error"
             />
           </div>
           <div id="caseNumber-error" aria-live="polite" aria-atomic="true">
@@ -57,6 +58,7 @@ export default function Form() {
               id="title"
               name="title"
               className="block w-full rounded-md border border-gray-200 py-2 pl-5 text-sm outline-2 placeholder:text-gray-500"
+              aria-describedby="title-error"
             />
           </div>
           <div id="title-error" aria-live="polite" aria-atomic="true">
@@ -82,9 +84,10 @@ export default function Form() {
               id="description"
               name="description"
               className="block w-full rounded-md border border-gray-200 py-2 pl-5 text-sm outline-2 placeholder:text-gray-500"
+              aria-describedby="description-error"
             />
           </div>
-          <div id="title-error" aria-live="polite" aria-atomic="true">
+          <div id="description-error" aria-live="polite" aria-atomic="true">
             {state.errors?.title &&
               state.errors.title.map((error: string) => (
                 <p className="mt-2 text-sm text-red-500" key={error}>
@@ -104,6 +107,7 @@ export default function Form() {
               id="status"
               name="status"
               className="block w-full rounded-md border border-gray-200 py-2 pl-5 text-sm outline-2 placeholder:text-gray-500"
+              aria-describedby="status-error"
               defaultValue=""
             >
               <option value="" disabled>Select a status</option>
