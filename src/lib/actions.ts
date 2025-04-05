@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { Case } from "./definition";
 
 export type State = {
@@ -24,15 +25,65 @@ interface ErrorResponse {
   };
 }
 
+const FormSchema = z.object({
+  id: z.number(),
+  caseNumber: z
+    .string()
+    .min(1, { message: "Case number is required" })
+    .max(10, { message: "Must be 10 or fewer characters long" }),
+  title: z
+    .string()
+    .min(1, { message: "Title is required" })
+    .max(80, { message: "Must be 80 or fewer characters long" }),
+  description: z
+    .string()
+    .max(200, {
+      message: "Must be 200 or fewer characters long",
+    })
+    .optional()
+    .nullable(),
+  status: z.enum(["New", "Acknoledged", "In-progress", "Resolved", "Closed"], {
+    invalid_type_error: "Please select an appropriate status",
+  }),
+  createdDatetime: z.date(),
+  lastModifiedDatetime: z.date(),
+});
+
+const CreateCase = FormSchema.omit({
+  id: true,
+  createdDatetime: true,
+  lastModifiedDatetime: true,
+});
+const UpdateCase = FormSchema.omit({
+  id: true,
+  createdDatetime: true,
+  lastModifiedDatetime: true,
+});
+
 export async function createCase(
   prevState: State,
   formData: FormData
 ): Promise<State> {
-  const newCase = {
+  const validatedFields = CreateCase.safeParse({
     caseNumber: formData.get("caseNumber"),
     title: formData.get("title"),
     description: formData.get("description"),
     status: formData.get("status"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing fields. Failed to create case.",
+    };
+  }
+
+  const { caseNumber, title, description, status } = validatedFields.data;
+  const newCase = {
+    caseNumber,
+    title,
+    description,
+    status,
   };
 
   const requestOptions = {
@@ -45,7 +96,7 @@ export async function createCase(
     const response = await fetch("/api/v1/cases", requestOptions);
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
-      console.error("Failed to create case", errorData)
+      console.error("Failed to create case", errorData);
       return {
         message: "Failed to create case",
         errorResponse: errorData,
@@ -66,12 +117,27 @@ export async function updateCase(
   prevState: State,
   formData: FormData
 ): Promise<State> {
-  const updatedCase = {
-    id: id,
+  const validatedFields = UpdateCase.safeParse({
     caseNumber: formData.get("caseNumber"),
     title: formData.get("title"),
     description: formData.get("description"),
     status: formData.get("status"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing fields. Failed to create case.",
+    };
+  }
+
+  const { caseNumber, title, description, status } = validatedFields.data;
+  const updatedCase = {
+    id,
+    caseNumber,
+    title,
+    description,
+    status,
   };
 
   const requestOptions = {
@@ -84,7 +150,7 @@ export async function updateCase(
     const response = await fetch(`/api/v1/cases/${id}`, requestOptions);
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
-      console.error("Failed to update case", errorData)
+      console.error("Failed to update case", errorData);
       return {
         message: "Failed to update case",
         errorResponse: errorData,
@@ -106,7 +172,7 @@ export type FindState = {
   cases?: Case[];
   error?: ErrorResponse;
   message?: string;
-}
+};
 
 export async function findCaseById(id: number): Promise<FindState> {
   const requestOptions = {
@@ -120,12 +186,12 @@ export async function findCaseById(id: number): Promise<FindState> {
       const errorData: ErrorResponse = await response.json();
       console.error(`Failed to find case by id ${id}`, errorData);
       return {
-        error: errorData
+        error: errorData,
       };
     }
     const resp = await response.json();
     return {
-      case: resp.data
+      case: resp.data,
     };
   } catch (err) {
     const msg = `Failed to get case by id ${id}`;
@@ -146,12 +212,12 @@ export async function findAllCases(): Promise<FindState> {
       const errorData: ErrorResponse = await response.json();
       console.error("Failed to get all cases", errorData);
       return {
-        error: errorData
+        error: errorData,
       };
     }
     const resp = await response.json();
     return {
-      cases: resp.data
+      cases: resp.data,
     };
   } catch (err) {
     const msg = `Failed to get all cases`;
@@ -170,7 +236,7 @@ export async function deleteCase(id: number): Promise<void> {
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       console.error(`Failed to delete case by id ${id}`, errorData);
-      throw new Error(`Failed to delete case by id ${id}`)
+      throw new Error(`Failed to delete case by id ${id}`);
     }
   } catch (err) {
     const msg = `Failed to delete case by id ${id}`;

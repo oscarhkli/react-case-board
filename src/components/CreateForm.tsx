@@ -100,11 +100,19 @@ export default function Form() {
             Status
           </label>
           <div className="relative">
-            <input
+            <select
               id="status"
               name="status"
               className="block w-full rounded-md border border-gray-200 py-2 pl-5 text-sm outline-2 placeholder:text-gray-500"
-            />
+              defaultValue=""
+            >
+              <option value="" disabled>Select a status</option>
+              <option value="New">New</option>
+              <option value="Acknowledged">Acknowledged</option>
+              <option value="In-progress">In-progress</option>
+              <option value="Resolved">Resolved</option>
+              <option value="Closed">Closed</option>
+            </select>
           </div>
           <div id="status-error" aria-live="polite" aria-atomic="true">
             {state.errors?.status &&
