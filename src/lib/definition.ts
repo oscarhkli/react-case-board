@@ -4,8 +4,8 @@ export type Case = {
   title: string;
   description: string | null;
   status: string;
-  createdDateTime: string;
-  lastModifiedDateTime: string;
+  createdDateTime: Date;
+  lastModifiedDateTime: Date;
 };
 
 export type CasesResponse = {

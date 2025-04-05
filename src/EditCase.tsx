@@ -44,7 +44,6 @@ export default function EditCase() {
     }
 
     if (id >= 0) {
-      console.log("find")
       findCase();
     } else {
       setLoading(false);
@@ -60,7 +59,7 @@ export default function EditCase() {
   }
 
   return (
-    <div>
+    <div className="p-5">
       <h1 className="text-3xl font-bold">{`Edit Case: ${caseId}`}</h1>
       <Form singleCase={singleCase} />
     </div>

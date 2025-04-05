@@ -8,13 +8,9 @@ interface EditFormProps {
   singleCase: Case;
 }
 
-export default function Form({
-  singleCase,
-}: 
-  EditFormProps
-){
+export default function Form({ singleCase }: EditFormProps) {
   const navigate = useNavigate();
-  const updateCaseWithId = updateCase.bind(null, singleCase.id)
+  const updateCaseWithId = updateCase.bind(null, singleCase.id);
   const initialState: State = { message: null, errors: {} };
 
   const handleUpdateCase = async (prevState: State, formData: FormData) => {
@@ -28,22 +24,30 @@ export default function Form({
   const [state, formAction] = useActionState(handleUpdateCase, initialState);
 
   return (
-    <form action={formAction}>
-      <div>
+    <form className="mt-3" action={formAction}>
+      <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Case Number */}
-        <div>
-          <div>
-            <label htmlFor="caseNumber">Case Number</label>
+        <div className="mb-4">
+          <label
+            htmlFor="caseNumber"
+            className="mb-2 block text-sm font-medium"
+          >
+            Case Number
+          </label>
+          <div className="relative">
             <input
               id="caseNumber"
               name="caseNumber"
               defaultValue={singleCase.caseNumber}
+              disabled
+              readOnly
+              className="block w-full rounded-md border border-gray-200 py-2 pl-5 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
           <div id="caseNumber-error" aria-live="polite" aria-atomic="true">
             {state.errors?.caseNumber &&
               state.errors.caseNumber.map((error: string) => (
-                <p className="error" key={error}>
+                <p className="mt-2 text-sm text-red-500" key={error}>
                   {error}
                 </p>
               ))}
@@ -51,19 +55,22 @@ export default function Form({
         </div>
 
         {/* Title */}
-        <div>
-          <div>
-            <label htmlFor="title">Title</label>
+        <div className="mb-4">
+          <label htmlFor="title" className="mb-2 block text-sm font-medium">
+            Title
+          </label>
+          <div className="relative">
             <input
               id="title"
               name="title"
               defaultValue={singleCase.title}
+              className="block w-full rounded-md border border-gray-200 py-2 pl-5 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
           <div id="title-error" aria-live="polite" aria-atomic="true">
             {state.errors?.title &&
               state.errors.title.map((error: string) => (
-                <p className="error" key={error}>
+                <p className="mt-2 text-sm text-red-500" key={error}>
                   {error}
                 </p>
               ))}
@@ -71,19 +78,25 @@ export default function Form({
         </div>
 
         {/* Description */}
-        <div>
-          <div>
-            <label htmlFor="description">Description</label>
+        <div className="mb-4">
+          <label
+            htmlFor="description"
+            className="mb-2 block text-sm font-medium"
+          >
+            Description
+          </label>
+          <div className="relative">
             <input
               id="description"
               name="description"
               defaultValue={singleCase.description ?? ""}
+              className="block w-full rounded-md border border-gray-200 py-2 pl-5 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
           <div id="title-error" aria-live="polite" aria-atomic="true">
             {state.errors?.title &&
               state.errors.title.map((error: string) => (
-                <p className="error" key={error}>
+                <p className="mt-2 text-sm text-red-500" key={error}>
                   {error}
                 </p>
               ))}
@@ -91,19 +104,22 @@ export default function Form({
         </div>
 
         {/* Status */}
-        <div>
-          <div>
-            <label htmlFor="status">Status</label>
+        <div className="mb-4">
+          <label htmlFor="status" className="mb-2 block text-sm font-medium">
+            Status
+          </label>
+          <div className="relative">
             <input
               id="status"
               name="status"
               defaultValue={singleCase.status}
+              className="block w-full rounded-md border border-gray-200 py-2 pl-5 text-sm outline-2 placeholder:text-gray-500"
             />
           </div>
           <div id="status-error" aria-live="polite" aria-atomic="true">
             {state.errors?.status &&
               state.errors.status.map((error: string) => (
-                <p className="error" key={error}>
+                <p className="mt-2 text-sm text-red-500" key={error}>
                   {error}
                 </p>
               ))}
@@ -111,7 +127,7 @@ export default function Form({
         </div>
       </div>
 
-      <div>
+      <div className="mt-6 flex gap-4">
         <Link to="/">
           <Button>Cancel</Button>
         </Link>
