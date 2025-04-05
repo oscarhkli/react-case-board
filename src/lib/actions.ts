@@ -7,8 +7,22 @@ export type State = {
     description?: string[];
     status?: string[];
   };
+  errorResponse?: ErrorResponse | null;
   message?: string | null;
 };
+
+export type ErrorDetails = {
+  reason: string;
+  message: string;
+};
+
+interface ErrorResponse {
+  error: {
+    code: string;
+    message: string;
+    errors: ErrorDetails[];
+  };
+}
 
 export async function createCase(
   prevState: State,
@@ -30,11 +44,11 @@ export async function createCase(
   try {
     const response = await fetch("/api/v1/cases", requestOptions);
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData: ErrorResponse = await response.json();
+      console.error("Failed to create case", errorData)
       return {
-        errors: errorData.errors || {
-          message: ["Error occured in creating case"],
-        },
+        message: "Failed to create case",
+        errorResponse: errorData,
       };
     }
 
@@ -69,11 +83,11 @@ export async function updateCase(
   try {
     const response = await fetch(`/api/v1/cases/${id}`, requestOptions);
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData: ErrorResponse = await response.json();
+      console.error("Failed to update case", errorData)
       return {
-        errors: errorData.errors || {
-          message: ["Error occured in creating case"],
-        },
+        message: "Failed to update case",
+        errorResponse: errorData,
       };
     }
 
@@ -87,7 +101,14 @@ export async function updateCase(
   }
 }
 
-export async function findCaseById(id: number): Promise<Case> {
+export type FindState = {
+  case?: Case;
+  cases?: Case[];
+  error?: ErrorResponse;
+  message?: string;
+}
+
+export async function findCaseById(id: number): Promise<FindState> {
   const requestOptions = {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -96,19 +117,24 @@ export async function findCaseById(id: number): Promise<Case> {
   try {
     const response = await fetch(`/api/v1/cases/${id}`, requestOptions);
     if (!response.ok) {
-      const errorData = await response.json();
-      return errorData;
+      const errorData: ErrorResponse = await response.json();
+      console.error(`Failed to find case by id ${id}`, errorData);
+      return {
+        error: errorData
+      };
     }
     const resp = await response.json();
-    return resp.data;
+    return {
+      case: resp.data
+    };
   } catch (err) {
     const msg = `Failed to get case by id ${id}`;
     console.error(msg, err);
-    throw new Error(msg);
+    throw err;
   }
 }
 
-export async function findAllCases(): Promise<Case[]> {
+export async function findAllCases(): Promise<FindState> {
   const requestOptions = {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -117,15 +143,20 @@ export async function findAllCases(): Promise<Case[]> {
   try {
     const response = await fetch(`/api/v1/cases`, requestOptions);
     if (!response.ok) {
-      const errorData = await response.json();
-      return errorData;
+      const errorData: ErrorResponse = await response.json();
+      console.error("Failed to get all cases", errorData);
+      return {
+        error: errorData
+      };
     }
     const resp = await response.json();
-    return resp.data;
+    return {
+      cases: resp.data
+    };
   } catch (err) {
-    const msg = `Failed to get all cases by id`;
+    const msg = `Failed to get all cases`;
     console.error(msg, err);
-    throw new Error(msg);
+    throw err;
   }
 }
 
@@ -137,11 +168,13 @@ export async function deleteCase(id: number): Promise<void> {
   try {
     const response = await fetch(`/api/v1/cases/${id}`, requestOptions);
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Failed to delete case: ${errorData.message}`);
+      const errorData: ErrorResponse = await response.json();
+      console.error(`Failed to delete case by id ${id}`, errorData);
+      throw new Error(`Failed to delete case by id ${id}`)
     }
   } catch (err) {
-    console.error(`Error occurred while deleting case ${id}`, err);
+    const msg = `Failed to delete case by id ${id}`;
+    console.error(msg, err);
     throw err;
   }
 }

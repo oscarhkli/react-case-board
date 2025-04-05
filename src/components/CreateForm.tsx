@@ -1,5 +1,5 @@
 import { useActionState } from "react";
-import { createCase, State } from "../lib/actions";
+import { createCase, ErrorDetails, State } from "../lib/actions";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "./button";
 
@@ -8,9 +8,11 @@ export default function Form() {
   const initialState: State = { message: null, errors: {} };
 
   const handleCreateCase = async (prevState: State, formData: FormData) => {
-    const result = await createCase(prevState, formData);
-    if (!result.errors) {
+    const result: State = await createCase(prevState, formData);
+    if (!result.errors && !result.errorResponse) {
       navigate("/");
+    } else if (result.errorResponse) {
+      console.error(result.errorResponse);
     }
     return result;
   };
@@ -121,6 +123,15 @@ export default function Form() {
         </Link>
         <Button type="submit">Create Case</Button>
       </div>
+
+      <div id="status-error" aria-live="polite" aria-atomic="true">
+          {state.errorResponse && state.errorResponse.error?.errors.map((error: ErrorDetails) => (
+            <p className="mt-2 text-sm text-red-500" key={`${error.reason}-${error.message}`}>
+              {`${error.reason}: ${error.message}`}
+            </p> 
+          ))}
+      </div>
+
     </form>
   );
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // import "./App.css";
 import { Link } from "react-router-dom";
 import { Case } from "./lib/definition";
-import { deleteCase, findAllCases } from "./lib/actions";
+import { deleteCase, findAllCases, FindState } from "./lib/actions";
 import { Button } from "./components/button";
 
 interface DeleteButtonProps {
@@ -40,8 +40,12 @@ function App() {
   useEffect(() => {
     async function findAll() {
       try {
-        const foundCases = await findAllCases();
-        setCases(foundCases);
+        const foundCases: FindState = await findAllCases();
+        if (!foundCases.cases) {
+          console.error("Error in finding all cases", foundCases.error);
+        } else {
+          setCases(foundCases.cases);
+        }
       } catch (err) {
         console.error("Error in finding all cases", err);
         setCases([]);
@@ -121,7 +125,11 @@ function App() {
           })}
         </tbody>
       </table>
-      <div>{opMsg}</div>
+      {opMsg && (
+        <div className="mt-2 text-sm text-red-500" aria-live="polite" aria-atomic="true">
+          {opMsg}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Form from "./components/EditForm";
 import { Navigate, useParams } from "react-router-dom";
-import { findCaseById } from "./lib/actions";
+import { findCaseById, FindState } from "./lib/actions";
 import { Case } from "./lib/definition";
 
 function toNumber(caseId: string | null | undefined): number {
@@ -29,11 +29,12 @@ export default function EditCase() {
   useEffect(() => {
     async function findCase() {
       try {
-        const foundCase = await findCaseById(id);
-        if (!foundCase) {
+        const foundCase: FindState = await findCaseById(id);
+        if (!foundCase.case) {
+          console.error("Error in finding case", foundCase.error);
           setSingleCase(null);
         } else {
-          setSingleCase(foundCase);
+          setSingleCase(foundCase.case);
         }
       } catch (err) {
         console.error("Error in finding case", err);
