@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Case } from "./definition";
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL || "http://localhost:61001";
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:61001";
 
 export type State = {
   errors?: {
@@ -149,7 +149,10 @@ export async function updateCase(
   };
 
   try {
-    const response = await fetch(`${backendUrl}/api/v1/cases/${id}`, requestOptions);
+    const response = await fetch(
+      `${backendUrl}/api/v1/cases/${id}`,
+      requestOptions
+    );
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       console.error("Failed to update case", errorData);
@@ -183,7 +186,10 @@ export async function findCaseById(id: number): Promise<FindState> {
   };
 
   try {
-    const response = await fetch(`${backendUrl}/api/v1/cases/${id}`, requestOptions);
+    const response = await fetch(
+      `${backendUrl}/api/v1/cases/${id}`,
+      requestOptions
+    );
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       console.error(`Failed to find case by id ${id}`, errorData);
@@ -234,7 +240,10 @@ export async function deleteCase(id: number): Promise<void> {
   };
 
   try {
-    const response = await fetch(`${backendUrl}/api/v1/cases/${id}`, requestOptions);
+    const response = await fetch(
+      `${backendUrl}/api/v1/cases/${id}`,
+      requestOptions
+    );
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       console.error(`Failed to delete case by id ${id}`, errorData);

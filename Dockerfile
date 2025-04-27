@@ -4,8 +4,8 @@ FROM node:22-alpine AS build
 # Set working directory
 WORKDIR /app
 
-ARG REACT_APP_BACKEND_URL=http://localhost:61001
-ENV REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL} 
+ARG VITE_BACKEND_URL=http://localhost:61001
+ENV VITE_BACKEND_URL=${VITE_BACKEND_URL} 
 
 # Copy package.json and install dependencies
 COPY package*.json ./
